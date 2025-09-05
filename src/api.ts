@@ -1,45 +1,45 @@
-// src/api.ts
-import type { StreamOptions } from './types'
+// Placeholder API implementations.  Replace with your own backend calls.
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
-
-export async function generateOnce(
-  prompt: string
-): Promise<{ text: string; audioUrl?: string | null }> {
-  const res = await fetch(`${API_URL}/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
-  });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  const data = await res.json();
-  // IMPORTANT: this is a plain object literal (no backticks)
-  return {
-    text: data.output ?? '',
-    audioUrl: data.audio_url ?? data.audioUrl ?? null,
-  };
+function delay(ms = 600) {
+  return new Promise<void>(resolve => setTimeout(resolve, ms))
 }
 
-export async function generateStream(
-  prompt: string,
-  opts: StreamOptions
-): Promise<void> {
-  const res = await fetch(`${API_URL}/generate_stream`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
-    signal: opts.signal,
-  });
-  if (!res.ok) throw new Error(`Stream error: ${res.status}`);
+/**
+ * Simulate an image generation endpoint.  Returns a piece of text and a dummy
+ * image URL based on the prompt.  Replace this with your own API call.
+ */
+export async function generateImageFromPrompt(prompt: string) {
+  // In demo mode this API call is disabled.  Return a constant message
+  // indicating what would normally happen.  No image is returned.
+  await delay(300)
+  return { text: 'what api is called', imageUrls: [] }
+}
 
-  const reader = res.body?.getReader();
-  if (!reader) throw new Error('ReadableStream not supported');
+/**
+ * Simulate a random song suggestion.  Useful for the “Surprise me with a
+ * random song” helper button.  Replace this with a real random song API if
+ * desired.
+ */
+export async function surpriseMeSong() {
+  // In demo mode this API call is disabled.  Return a constant message
+  // indicating what would normally happen.
+  await delay(300)
+  return { message: 'what api is called' }
+}
 
-  const decoder = new TextDecoder();
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value, { stream: true });
-    opts.onToken?.(chunk);
-  }
+/**
+ * Pretend login.  Accepts any username and returns it.  No validation is
+ * performed.
+ */
+export async function fakeLogin(username: string) {
+  await delay(300)
+  return { ok: true, username }
+}
+
+/**
+ * Pretend logout.  Always succeeds.
+ */
+export async function fakeLogout() {
+  await delay(200)
+  return { ok: true }
 }

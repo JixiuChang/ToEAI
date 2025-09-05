@@ -4,10 +4,20 @@ export interface Message {
   id: string
   role: Role
   content: string
-  timestamp: number
+  imageUrls?: string[]
+  createdAt: string
 }
 
-export type StreamOptions = {
-  signal?: AbortSignal | null;
-  onToken?: (chunk: string) => void;
-};
+export interface ChatSession {
+  id: string
+  title: string
+  createdAt: string
+  updatedAt: string
+  messages: Message[]
+}
+
+export interface RootState {
+  currentUser: string
+  sessionsByUser: Record<string, ChatSession[]>
+  activeSessionId?: string
+}

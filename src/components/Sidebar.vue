@@ -1,62 +1,63 @@
 <template>
-  <!-- Mobile overlay -->
-  <div v-if="mobileOpen" class="overlay" @click="$emit('close-mobile')"></div>
-
-  <aside class="sidebar" :class="{ open: mobileOpen }" @click.stop>
-    <!-- Header -->
-    <div class="head">
-      <div class="logo-row">
-        <div class="dot"></div>
-        <strong>Chats</strong>
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <!-- New Chat button -->
+      <button class="button primary" @click="onNewChat">+ New Chat</button>
+      <!-- Current user tag -->
+      <div class="tag">{{ currentUser }}</div>
+    </div>
+    <div class="separator"></div>
+    <!-- Conversations list -->
+    <div class="sidebar__list">
+      <div v-if="sessions.length === 0" class="chat__empty" style="padding:1.25rem;">
+        <div>No chats yet. Start a new one.</div>
+      </div>
+      <div
+        v-for="s in sessions"
+        :key="s.id"
+        :class="['sidebar__item', { active: s.id === activeId }]"
+        @click="setActive(s.id)"
+      >
+        <div>
+          <div style="font-weight:600;">{{ s.title }}</div>
+          <small>{{ formatTime(s.updatedAt) }}</small>
+        </div>
+        <div class="row">
+          <button class="button ghost" title="Rename" @click.stop="rename(s)">Rename</button>
+          <button class="button ghost danger" title="Delete" @click.stop="remove(s.id)">Delete</button>
+        </div>
       </div>
     </div>
-
-    <!-- New chat (full width, top) -->
-    <button class="new-chat" @click="$emit('new')" title="New chat">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      New chat
-    </button>
-
-    <!-- Conversations (compact list) -->
-    <ul class="list">
-      <li
-        v-for="c in sorted"
-        :key="c.id"
-        :class="['item', { active: c.id === activeId }]"
-        @click="$emit('open', c.id)"
-        :title="c.title"
-      >
-        <svg class="file-ico" width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M6 4h7l5 5v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.6"/>
-        </svg>
-        <span class="title">{{ c.title || 'Untitled' }}</span>
-      </li>
-    </ul>
   </aside>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-type Conv = { id: string; title: string; updatedAt: number }
+import { state, currentSessions, newSession, setActiveSession, deleteSession, renameSession } from '../store'
 
-const props = defineProps<{
-  conversations: Conv[],
-  activeId: string | null,
-  mobileOpen?: boolean
-}>()
+const currentUser = computed(() => state.currentUser)
+const sessions = currentSessions
+const activeId = computed(() => state.activeSessionId)
 
-defineEmits<{
-  (e:'new'): void
-  (e:'open', id: string): void
-  (e:'close-mobile'): void
-}>()
+function onNewChat() {
+  newSession()
+}
 
-const sorted = computed(() => [...props.conversations].sort((a,b)=>b.updatedAt - a.updatedAt))
-const mobileOpen = computed(() => props.mobileOpen === true)
+function setActive(id: string) {
+  setActiveSession(id)
+}
+
+function remove(id: string) {
+  deleteSession(id)
+}
+
+function rename(s: { id: string; title: string }) {
+  const t = prompt('Rename chat', s.title)
+  if (t !== null) renameSession(s.id, t)
+}
+
+function formatTime(iso: string) {
+  const d = new Date(iso)
+  return d.toLocaleString()
+}
 </script>
-
-<style scoped>
-/* Uses global sidebar styles from style.css; only minimal component-specific tweaks here if needed */
-</style>

@@ -19,7 +19,7 @@
       <div class="msg-wrap" v-if="current">
         <!-- Empty thread helper -->
         <div v-if="thread.length===0" style="display:grid;place-items:center;margin: 8px 0 2px">
-          <button class="btn-primary" @click="surpriseMe">Surprise me with a song</button>
+          <button class="btn-primary" @click="surpriseMe">Surprise me with a random song</button>
         </div>
 
         <div v-for="(m,i) in thread" :key="i" :class="['bubble', m.role]">
@@ -56,7 +56,7 @@
 
       <div class="composer-inner">
         <form class="composer-box" @submit.prevent="send">
-          <button type="button" class="icon-btn" @click="pickFiles" title="Attach stems/MIDI">📎</button>
+          <button type="button" class="icon-btn" @click="pickFiles" title="Attach stems/MIDI"></button>
           <input ref="fileEl" type="file" multiple hidden @change="onFiles" accept="audio/*,.mid,.midi" />
 
           <textarea
@@ -74,7 +74,7 @@
         <div v-if="attachments.length" class="attach-chips">
           <span class="chip" v-for="(a,idx) in attachments" :key="idx" :title="a.name">
             {{ a.name }}
-            <button class="x" type="button" @click="removeAttachment(idx)">✕</button>
+            <button class="x" type="button" @click="removeAttachment(idx)">x</button>
           </span>
         </div>
 
@@ -179,41 +179,30 @@ async function send(){
 
   // 1) user message
   thread.value.push({ role:'user', content:draft.value.trim(), attachments: attachments.value.length ? [...attachments.value] : undefined })
-  draft.value = ''; attachments.value = []; saveThread(); touchCurrent(); await nextTick(scrollBottom)
+  draft.value = ''
+  attachments.value = []
+  saveThread()
+  touchCurrent()
+  await nextTick(scrollBottom)
 
-  // 2) PLUG YOUR BACKEND HERE (SSE or request/response):
-  // const resp = await fetch(`${import.meta.env.VITE_API_URL}/generate`, {
-  //   method:'POST',
-  //   headers:{ 'Content-Type':'application/json' },
-  //   body: JSON.stringify({ messages: thread.value })
-  // })
-  // const data = await resp.json()
-  // const replyText = data.text
-  // Optionally set an audio URL: audioUrl: data.audio_url
-
-  // DEMO fallback (remove once wired)
-  const replyText = `You said: ${thread.value.at(-1)?.content}\n(Backend reply placeholder.)`
-
+  // 2) In demo mode the backend is disabled: always reply with a fixed message
+  const replyText = 'what api is called'
   thread.value.push({ role:'assistant', content: replyText })
-  saveThread(); touchCurrent(); await nextTick(scrollBottom)
+  saveThread()
+  touchCurrent()
+  await nextTick(scrollBottom)
 }
 
 /* ---------- helpers ---------- */
-function quick(prompt: string){
-  draft.value = prompt
-}
+function quick(prompt: string){ draft.value = prompt }
 function surpriseMe(){
   if(!current.value) return
-  thread.value.push({ role:'assistant', content:
-`Here’s a prompt to start a song:
-• Mood: dreamy
-• Topic: neon rain
-• Tempo: 92 BPM
-• Style: alt-pop with airy pads
-Try: 4-bar intro → verse → pre-chorus → chorus.` })
-  saveThread(); touchCurrent(); nextTick(scrollBottom)
+  // Push a placeholder message instead of calling the backend
+  thread.value.push({ role:'assistant', content: 'what api is called' })
+  saveThread()
+  touchCurrent()
+  nextTick(scrollBottom)
 }
-
 function genId(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8) }
 function scrollBottom(){ const el = scrollEl.value; if(!el) return; el.scrollTop = el.scrollHeight }
 

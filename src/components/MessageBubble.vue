@@ -1,15 +1,36 @@
 <template>
-<div :class="['bubble-row', msg.role === 'user' ? 'right' : 'left', msg.role === 'system' ? 'system' : '']">
-<div class="bubble" role="article" :aria-label="msg.role + ' message'">
-<div class="bubble-content">{{ msg.content }}</div>
-<audio v-if="msg.audioUrl" class="bubble-audio" :src="msg.audioUrl" controls preload="none"></audio>
-<div class="bubble-meta">{{ new Date(msg.timestamp).toLocaleTimeString() }}</div>
-</div>
-</div>
+  <div :class="['message', role]">
+    <div class="meta">{{ who }} · {{ time }}</div>
+    <div v-html="contentHtml"></div>
+    <img v-for="(u, i) in imageUrls" :key="i" :src="u" alt="generated image" />
+  </div>
 </template>
 
-
 <script setup lang="ts">
-import type { Message } from '../types'
-defineProps<{ msg: Message }>()
+import { computed } from 'vue'
+
+const props = defineProps<{
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  createdAt: string
+  imageUrls?: string[]
+}>()
+
+const who = computed(() => {
+  return props.role === 'user' ? 'You' : props.role === 'assistant' ? 'ToEAI' : 'System'
+})
+
+const time = computed(() => {
+  return new Date(props.createdAt).toLocaleString()
+})
+
+// Render markdown-like bold (**bold**) and newlines.  For a production
+// implementation you might use a real markdown parser.
+const contentHtml = computed(() => {
+  return props.content
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br/>')
+})
+
+const imageUrls = computed(() => props.imageUrls || [])
 </script>
