@@ -1,0 +1,1 @@
+{"root":["./src/api.ts","./src/main.ts","./src/types.ts","./src/vite-env.d.ts","./src/app.vue","./src/components/chat.vue","./src/components/composer.vue","./src/components/messagebubble.vue","./src/components/sidebar.vue","./src/components/toolbar.vue"],"errors":true,"version":"5.9.2"}
