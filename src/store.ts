@@ -104,8 +104,17 @@ export function allSessions(): ChatSession[] {
 /**
  * Set the given session ID as active.
  */
+/**
+ * Set the given session ID as active.  Logs the ID so that the UI can
+ * eventually check the session for display.  If the ID is falsy, the
+ * active session is unset.  Always persists the change.
+ */
 export function setActiveSession(id: string) {
   state.activeSessionId = id
+  // Log the session id to aid in debugging / future API checks
+  if (id) {
+    console.log(`checked for displaying: ${id}`)
+  }
   saveState()
 }
 
@@ -134,16 +143,35 @@ export function renameSession(id: string, title: string) {
  * Delete the session with the given ID.  If it was active, switch to the
  * next most recent session if available.
  */
+/**
+ * Delete the session with the given ID.  If it was the active session, we
+ * switch to the next most recent session if available.  If there are no
+ * sessions left after deletion, a brand new session is created and made
+ * active.  Whenever the active session changes, we log the ID check for
+ * debugging.  Note: All sessions are guaranteed to have a unique id.
+ */
 export function deleteSession(id: string) {
   const list = state.sessionsByUser[state.currentUser] || []
   const idx = list.findIndex(x => x.id === id)
-  if (idx >= 0) {
-    list.splice(idx, 1)
-    if (state.activeSessionId === id) {
-      state.activeSessionId = list[0]?.id
+  if (idx === -1) return
+  // Determine if we are deleting the active session
+  const deletingActive = state.activeSessionId === id
+  // Remove the session
+  list.splice(idx, 1)
+  // If we just removed the active session, determine which session to show next
+  if (deletingActive) {
+    if (list.length > 0) {
+      // Prefer the next item in the list (if it exists) or fallback to the last one
+      const next = list[Math.min(idx, list.length - 1)]
+      setActiveSession(next.id)
+    } else {
+      // No sessions left; create a brand new one and set it active
+      const fresh = newSession()
+      setActiveSession(fresh.id)
     }
-    saveState()
   }
+  // Save after mutation
+  saveState()
 }
 
 /**

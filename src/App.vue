@@ -1,12 +1,12 @@
 <template>
   <div class="layout">
     <!-- Left side navigation (conversation history) -->
-    <Sidebar />
+    <Sidebar @new-chat="handleNewChat" />
     <!-- Main content column -->
     <div class="main">
       <Topbar @open-login="showLogin = true" />
       <!-- Chat view -->
-      <Chat />
+      <Chat ref="chatRef" />
       <!-- Login modal toggled by Topbar -->
       <LoginModal v-if="showLogin" @close="showLogin = false" />
     </div>
@@ -22,4 +22,12 @@ import LoginModal from './components/LoginModal.vue'
 
 // Control whether the login modal is visible
 const showLogin = ref(false)
+
+// Hold a reference to the Chat component so we can call its exposed methods
+const chatRef = ref<InstanceType<typeof Chat> | null>(null)
+
+// When the sidebar signals a new chat, reset the conversation in Chat.vue
+function handleNewChat() {
+  chatRef.value?.newChat()
+}
 </script>

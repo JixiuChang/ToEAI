@@ -12,7 +12,8 @@ export async function generateImageFromPrompt(prompt: string) {
   // In demo mode this API call is disabled.  Return a constant message
   // indicating what would normally happen.  No image is returned.
   await delay(300)
-  return { text: 'what api is called', imageUrls: [] }
+  // Return an informative placeholder that includes the name of the API
+  return { text: 'generateImageFromPrompt is called', imageUrls: [] }
 }
 
 /**
@@ -24,7 +25,8 @@ export async function surpriseMeSong() {
   // In demo mode this API call is disabled.  Return a constant message
   // indicating what would normally happen.
   await delay(300)
-  return { message: 'what api is called' }
+  // Return an informative placeholder that includes the name of the API
+  return { message: 'surpriseMeSong is called' }
 }
 
 /**
