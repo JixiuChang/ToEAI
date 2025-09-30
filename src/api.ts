@@ -1,5 +1,4 @@
-// Placeholder API implementations.  Replace with your own backend calls.
-
+// Placeholder API implementations.  Replace with backend calls
 function delay(ms = 600) {
   return new Promise<void>(resolve => setTimeout(resolve, ms))
 }
@@ -8,12 +7,12 @@ function delay(ms = 600) {
  * Simulate an image generation endpoint.  Returns a piece of text and a dummy
  * image URL based on the prompt.  Replace this with your own API call.
  */
-export async function generateImageFromPrompt(prompt: string) {
+export async function responseToPrompt(prompt: string) {
   // In demo mode this API call is disabled.  Return a constant message
   // indicating what would normally happen.  No image is returned.
   await delay(300)
   // Return an informative placeholder that includes the name of the API
-  return { text: 'generateImageFromPrompt is called', imageUrls: [] }
+  return { text: 'resposeToPrompt is called', imageUrls: [] }
 }
 
 /**
@@ -33,7 +32,7 @@ export async function surpriseMeSong() {
  * Pretend login.  Accepts any username and returns it.  No validation is
  * performed.
  */
-export async function fakeLogin(username: string) {
+export async function userLogin(username: string) {
   await delay(300)
   return { ok: true, username }
 }
@@ -41,7 +40,7 @@ export async function fakeLogin(username: string) {
 /**
  * Pretend logout.  Always succeeds.
  */
-export async function fakeLogout() {
+export async function userLogout() {
   await delay(200)
   return { ok: true }
 }

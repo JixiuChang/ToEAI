@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { fakeLogin, fakeLogout } from '../api'
+import { userLogin, userLogout } from '../api'
 import { setUser, logoutUser, state } from '../store'
 
 const username = ref('')
@@ -36,7 +36,7 @@ const isLogged = computed(() => state.currentUser !== 'Guest')
 
 async function onLogin() {
   const name = username.value.trim() || 'User'
-  const res = await fakeLogin(name)
+  const res = await userLogin(name)
   if (res.ok) setUser(res.username)
   // Clear input
   username.value = ''
@@ -45,7 +45,7 @@ async function onLogin() {
 }
 
 async function onLogout() {
-  const res = await fakeLogout()
+  const res = await userLogout()
   if (res.ok) logoutUser()
   emitClose()
 }

@@ -100,7 +100,7 @@
         </div>
 
         <div class="hint-row">
-          Your files stay on your device until you integrate the backend upload.
+          Tales of Echo AI can make mistakes. Check important info.
         </div>
       </div>
     </div>
@@ -110,7 +110,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 // Import demo API functions. These return informative placeholders instead of calling a real backend.
-import { generateImageFromPrompt } from '../api'
+import { responseToPrompt } from '../api'
 
 type Role = 'user'|'assistant'
 type Attachment = { name: string; size: number; type: string; url: string }
@@ -244,12 +244,12 @@ async function send(){
 
   // 2) Call the placeholder image generation API to simulate a backend reply.
   try {
-    const resp = await generateImageFromPrompt(prompt)
-    const replyText = resp?.text || 'generateImageFromPrompt is called'
+    const resp = await responseToPrompt(prompt)
+    const replyText = resp?.text || 'responseToPrompt is called'
     thread.value.push({ role:'assistant', content: replyText })
   } catch (err) {
     // Fallback in case the API call fails
-    thread.value.push({ role:'assistant', content: 'generateImageFromPrompt is called' })
+    thread.value.push({ role:'assistant', content: 'responseToPrompt is called' })
   }
   saveThread()
   touchCurrent()
