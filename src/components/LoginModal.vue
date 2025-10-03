@@ -19,7 +19,6 @@
           <button class="button" @click="onLogin">Login</button>
           <button class="button ghost" @click="onLogout" v-if="isLogged">Logout</button>
         </div>
-        <div style="font-size:.85rem; color:var(--muted);">No validation is performed — this is a placeholder UI.</div>
       </div>
     </div>
   </div>
